@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>رمضان كريم | الإذاعة</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/main.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="bg-ramadan-dark text-white font-tajawal">
+    <div id="nav-placeholder"></div>
+
+    <section id="radio" class="py-24 min-h-screen relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute inset-0 stars opacity-30"></div>
+        <div class="absolute inset-0 islamic-pattern opacity-10"></div>
+
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="text-center mb-12">
+                <span class="text-ramadan-gold text-sm font-bold tracking-wider">بث مباشر 24 ساعة</span>
+                <h2 class="text-3xl lg:text-5xl font-bold mt-2 font-amiri text-white">الإذاعة الإسلامية</h2>
+            </div>
+
+            <div class="max-w-md mx-auto">
+                <!-- Cairo Radio Only -->
+                <div
+                    class="glass-effect rounded-3xl p-8 text-center border-t-4 border-ramadan-gold relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-ramadan-gold/5 group-hover:bg-ramadan-gold/10 transition-colors">
+                    </div>
+
+                    <div class="relative z-10">
+                        <div class="w-24 h-24 mx-auto bg-white/10 rounded-full flex items-center justify-center mb-6">
+                            <i class="fas fa-microphone-alt text-4xl text-ramadan-gold"></i>
+                        </div>
+
+                        <h3 class="text-2xl font-bold mb-2">إذاعة القرآن الكريم</h3>
+                        <p class="text-gray-400 mb-8">من القاهرة</p>
+
+                        <div id="wave-cairo" class="flex justify-center gap-1 h-8 mb-6 opacity-0 transition-opacity">
+                            <span class="w-1 bg-ramadan-gold animate-[wave_1s_infinite]"></span>
+                            <span class="w-1 bg-ramadan-gold animate-[wave_1.2s_infinite]"></span>
+                            <span class="w-1 bg-ramadan-gold animate-[wave_0.8s_infinite]"></span>
+                            <span class="w-1 bg-ramadan-gold animate-[wave_1.1s_infinite]"></span>
+                            <span class="w-1 bg-ramadan-gold animate-[wave_0.9s_infinite]"></span>
+                        </div>
+
+                        <button onclick="toggleRadio('cairo', 'https://stream.radiojar.com/8s5u5tpdtwzuv')"
+                            id="btn-cairo"
+                            class="w-full py-4 rounded-xl bg-ramadan-gold text-ramadan-dark font-bold hover:bg-white transition-all text-lg flex items-center justify-center gap-3">
+                            <i class="fas fa-play"></i> تشغيل البث
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <audio id="radioAudio" class="hidden"></audio>
+        </div>
+    </section>
+
+    <div id="footer-placeholder"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            injectNav('radio');
+            injectFooter();
+        });
+
+        const audio = document.getElementById('radioAudio');
+        let currentStation = null;
+
+        function toggleRadio(id, url) {
+            const btn = document.getElementById(`btn-${id}`);
+            const wave = document.getElementById(`wave-${id}`);
+
+            if (currentStation === id && !audio.paused) {
+                // Stop
+                audio.pause();
+                audio.src = "";
+                resetUI(id);
+                currentStation = null;
+            } else {
+                // Play new
+                if (currentStation) resetUI(currentStation);
+
+                // Loading state
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الاتصال...';
+
+                audio.src = url;
+                audio.play().then(() => {
+                    btn.innerHTML = '<i class="fas fa-stop"></i> إيقاف البث';
+                    btn.classList.add('bg-red-500', 'text-white');
+                    wave.classList.remove('opacity-0');
+                    currentStation = id;
+                }).catch(err => {
+                    console.error(err);
+                    Swal.fire({ title: 'خطأ', text: 'لا يمكن تشغيل البث حالياً', icon: 'error' });
+                    resetUI(id);
+                });
+            }
+        }
+
+        function resetUI(id) {
+            const btn = document.getElementById(`btn-${id}`);
+            const wave = document.getElementById(`wave-${id}`);
+            btn.innerHTML = '<i class="fas fa-play"></i> تشغيل البث';
+            btn.classList.remove('bg-red-500', 'text-white');
+            wave.classList.add('opacity-0');
+        }
+    </script>
+</body>
+
+</html>

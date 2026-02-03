@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>رمضان كريم | تحميل المصاحف</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/main.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="bg-ramadan-dark text-white font-tajawal">
+    <div id="nav-placeholder"></div>
+
+    <section class="py-24 min-h-screen relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute inset-0 stars opacity-30"></div>
+        <div class="absolute inset-0 islamic-pattern opacity-10"></div>
+
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="text-center mb-12">
+                <span class="text-ramadan-gold text-sm font-bold tracking-wider">مكتبة المصاحف</span>
+                <h2 class="text-3xl lg:text-5xl font-bold mt-2 font-amiri text-white">تحميل المصحف الشريف</h2>
+            </div>
+
+            <div id="moshafContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                <div class="col-span-full text-center py-12">
+                    <div class="loader mx-auto mb-4"></div>
+                    <p>جاري التحميل...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-placeholder"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            injectNav('moshaf');
+            injectFooter();
+            loadMoshaf();
+        });
+
+        async function loadMoshaf() {
+            try {
+                const res = await fetch("data/moshaf_types.json");
+                const data = await res.json();
+                renderCards(data);
+            } catch (e) {
+                console.error(e);
+                document.getElementById('moshafContainer').innerHTML = '<p class="col-span-full text-red-400 text-center">فشل تحميل البيانات</p>';
+            }
+        }
+
+        function renderCards(data) {
+            const container = document.getElementById("moshafContainer");
+            container.innerHTML = "";
+            data.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "glass-effect rounded-2xl overflow-hidden hover:transform hover:-translate-y-2 transition-transform duration-300";
+                div.innerHTML = `
+                    <div class="h-40 bg-gradient-to-br from-ramadan-gold/20 to-ramadan-blue/20 flex items-center justify-center">
+                        <i class="fas fa-book-quran text-6xl text-ramadan-gold/40"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-ramadan-gold mb-2">${item.name}</h3>
+                        <p class="text-sm text-gray-400 mb-6 h-10 overflow-hidden">${item.description || 'نسخة عالية الجودة للتحميل والقراءة'}</p>
+                        <a href="${item.download_link}" target="_blank" class="block w-full py-3 rounded-xl bg-ramadan-gold text-ramadan-dark text-center font-bold hover:bg-white transition-colors">
+                            <i class="fas fa-download ml-2"></i> تحميل
+                        </a>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+    </script>
+</body>
+
+</html>
